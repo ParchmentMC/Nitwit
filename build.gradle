@@ -1,0 +1,47 @@
+plugins {
+    id 'java'
+    id 'org.parchmentmc.writtenbooks' version '0.5.+'
+    id 'maven-publish'
+}
+
+project.group = 'org.parchmentmc'
+
+writtenbooks {
+    githubRepo = 'ParchmentMC/Nitwit'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(8)
+    withSourcesJar()
+}
+
+test {
+    useJUnitPlatform()
+}
+
+publishing {
+    publications.withType(MavenPublication).configureEach {
+        pom {
+            name = 'Nitwit'
+            description = 'GitHub App for managing Pull Requests to the Parchment mappings repository'
+            organization {
+                name = 'ParchmentMC'
+                url = 'https://github.com/ParchmentMC'
+            }
+            licenses {
+                license {
+                    name = 'MIT'
+                    url = 'https://opensource.org/licenses/MIT'
+                }
+            }
+        }
+    }
+}

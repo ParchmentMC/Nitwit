@@ -1,0 +1,11 @@
+pluginManagement {
+    repositories {
+        maven {
+            name 'ParchmentMC'
+            url 'https://maven.parchmentmc.org/'
+        }
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = 'Nitwit'
