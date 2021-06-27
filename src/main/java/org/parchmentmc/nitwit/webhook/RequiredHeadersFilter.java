@@ -28,7 +28,7 @@ public class RequiredHeadersFilter extends Filter {
     @Override
     public void doFilter(HttpExchange exchange, Chain chain) throws IOException {
         final HashSet<String> missingHeaders = new HashSet<>(requiredHeaders);
-        missingHeaders.removeAll(exchange.getRequestHeaders().keySet());
+        missingHeaders.removeIf(str -> exchange.getRequestHeaders().containsKey(str));
         if (!missingHeaders.isEmpty()) { // Missing required headers
             String response = "Missing required headers: " + missingHeaders + "\n";
             exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, response.length());

@@ -1,8 +1,7 @@
 package org.parchmentmc.nitwit;
 
 import com.sun.net.httpserver.HttpContext;
-import com.sun.net.httpserver.HttpsConfigurator;
-import com.sun.net.httpserver.HttpsServer;
+import com.sun.net.httpserver.HttpServer;
 import org.parchmentmc.nitwit.webhook.RequestMethodFilter;
 import org.parchmentmc.nitwit.webhook.RequiredHeadersFilter;
 import org.parchmentmc.nitwit.webhook.WebhookHttpHandler;
@@ -24,11 +23,12 @@ public class WebhookMain {
     private static final int PORT = 3000;
 
     public static void main(String[] args) throws Exception {
-        final SSLContext sslContext = createSSLContext();
-        SSLContext.setDefault(sslContext); // Set as default SSL context
+//        final SSLContext sslContext = createSSLContext();
+//        SSLContext.setDefault(sslContext); // Set as default SSL context
 
-        final HttpsServer server = HttpsServer.create(new InetSocketAddress(PORT), 0);
-        server.setHttpsConfigurator(new HttpsConfigurator(sslContext));
+//        final HttpsServer server = HttpsServer.create(new InetSocketAddress(PORT), 0);
+//        server.setHttpsConfigurator(new HttpsConfigurator(sslContext));
+        final HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
 
         server.setExecutor(Executors.newSingleThreadExecutor()); // Single thread executor
 

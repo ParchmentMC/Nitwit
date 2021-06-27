@@ -1,6 +1,5 @@
 package org.parchmentmc.nitwit.webhook;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.jetbrains.annotations.Nullable;
@@ -106,8 +105,8 @@ public class WebhookHttpHandler implements HttpHandler {
 
     private <T extends WebhookEvent> void doHandle(HttpExchange exchange, UUID deliveryID, WebhookEventHandler<T> handler) throws IOException {
         try (InputStream inputStream = exchange.getRequestBody();
-             JsonParser parser = GitHub.getMappingObjectReader().createParser(inputStream)) {
-            final T eventPayload = parser.readValueAs(handler.getEventClass());
+             OutputStream outputStream = exchange.getResponseBody()) {
+            final T eventPayload = GitHub.getMappingObjectReader().readValue(inputStream, handler.getEventClass());
 
             if (inputStream.available() > 0) {
                 // Data remains, read it all now (so if validating, it reaches end of stream)
