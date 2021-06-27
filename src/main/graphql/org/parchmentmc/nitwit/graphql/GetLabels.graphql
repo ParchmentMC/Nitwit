@@ -1,0 +1,10 @@
+query GetLabels($repo: String!, $owner: String!, $name: String!) {
+    repository(name: $repo, owner: $owner) {
+        labels(query: $name, first: 50) {
+            nodes {
+                name
+                id
+            }
+        }
+    }
+}

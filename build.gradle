@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.parchmentmc.writtenbooks' version '0.5.+'
     id 'maven-publish'
+    id 'com.apollographql.apollo' version '2.5.9'
 }
 
 project.group = 'org.parchmentmc'
@@ -15,11 +16,21 @@ repositories {
 }
 
 dependencies {
+    implementation 'com.apollographql.apollo:apollo-runtime:2.5.9' // Apollo (GraphQL)
+
+    implementation 'org.kohsuke:github-api:1.131' // GitHub API in Java
+
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.2' // JJWT
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2' // impl of JJWT's API
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.2' // JJWT Jackson support
+
+    implementation 'com.squareup.okhttp3:okhttp:4.9.0' // OkHttp3
+
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
 }
 
 java {
-    toolchain.languageVersion = JavaLanguageVersion.of(8)
+    toolchain.languageVersion = JavaLanguageVersion.of(16)
     withSourcesJar()
 }
 

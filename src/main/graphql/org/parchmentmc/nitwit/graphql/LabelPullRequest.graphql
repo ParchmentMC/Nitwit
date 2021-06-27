@@ -1,0 +1,8 @@
+mutation LabelPullRequest($id: ID!, $labels: [ID!]!) {
+    addLabelsToLabelable(input: {
+        labelableId: $id,
+        labelIds: $labels
+    }) {
+        clientMutationId
+    }
+}
