@@ -1,12 +1,13 @@
 package org.parchmentmc.nitwit;
 
 import com.apollographql.apollo.ApolloClient;
+import com.github.api.type.CustomType;
 import okhttp3.OkHttpClient;
-import org.jetbrains.annotations.Nullable;
 import org.parchmentmc.nitwit.graphql.GetLabelsQuery;
 import org.parchmentmc.nitwit.graphql.LabelPullRequestMutation;
 import org.parchmentmc.nitwit.graphql.PullRequestsQuery;
 import org.parchmentmc.nitwit.util.AuthenticationInterceptor;
+import org.parchmentmc.nitwit.util.DateTimeAdapter;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -26,6 +27,7 @@ public class GraphQLMain {
                         .cache(RESTMain.OKHTTP_CACHE)
                         .addInterceptor(AuthenticationInterceptor.bearer(RESTMain.TOKEN))
                         .build())
+                .addCustomTypeAdapter(CustomType.DATETIME, new DateTimeAdapter(ZoneOffset.UTC))
                 .build();
 
         String labelName = "ready to merge";
@@ -89,7 +91,7 @@ public class GraphQLMain {
                                         case APPROVED -> {
                                             approvals++;
                                             if (approvals == 2) {
-                                                secondApproveDate = asDateTime(review.submittedAt());
+                                                secondApproveDate = review.submittedAt();
                                                 Objects.requireNonNull(secondApproveDate, "Second approval review has no submission datetime");
                                             }
                                         }
@@ -110,11 +112,5 @@ public class GraphQLMain {
                     }
 
                 }));
-    }
-
-    @Nullable
-    static OffsetDateTime asDateTime(@Nullable Object obj) {
-        if (!(obj instanceof String str)) return null;
-        return OffsetDateTime.parse(str);
     }
 }
