@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class RESTMain {
-    static final String TOKEN = "<TOKEN>";
+    static final String TOKEN = System.getenv("TOKEN");
     static final String APP_ID = "<APP ID>";
     static final Path PRIVATE_KEY = Path.of("<PRIVATE KEY>");
 
