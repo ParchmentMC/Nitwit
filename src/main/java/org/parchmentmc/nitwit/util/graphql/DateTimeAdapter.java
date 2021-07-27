@@ -1,4 +1,4 @@
-package org.parchmentmc.nitwit.util;
+package org.parchmentmc.nitwit.util.graphql;
 
 import com.apollographql.apollo.api.CustomTypeAdapter;
 import com.apollographql.apollo.api.CustomTypeValue;

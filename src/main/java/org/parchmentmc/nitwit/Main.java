@@ -1,7 +1,7 @@
 package org.parchmentmc.nitwit;
 
 public class Main {
-    public static void main(String[] args) {
-        GraphQLMain.main(args);
+    public static void main(String[] args) throws Exception {
+        DiscordMain.main(args);
     }
 }

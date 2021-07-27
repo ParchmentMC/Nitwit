@@ -13,10 +13,21 @@ writtenbooks {
 
 repositories {
     mavenCentral()
+    maven {
+        name 'dv8tion'
+        url 'https://m2.dv8tion.net/releases'
+    }
+    maven {
+        name 'Minecraft'
+        url 'https://libraries.minecraft.net'
+    }
 }
 
 dependencies {
     implementation 'com.apollographql.apollo:apollo-runtime:2.5.9' // Apollo (GraphQL)
+    implementation 'com.apollographql.apollo:apollo-rx3-support:2.5.9' // Apollo support for RxJava3
+
+    implementation 'io.reactivex.rxjava3:rxjava:3.0.13' // RxJava3
 
     implementation 'org.kohsuke:github-api:1.131' // GitHub API in Java
 
@@ -25,6 +36,14 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.2' // JJWT Jackson support
 
     implementation 'com.squareup.okhttp3:okhttp:4.9.0' // OkHttp3
+
+    implementation 'com.mojang:brigadier:1.0.18' // Brigadier
+
+    implementation('net.dv8tion:JDA:4.3.0_289') { // JDA
+        exclude module: 'opus-java'
+    }
+
+    implementation 'org.spongepowered:configurate-hocon:4.1.1' // Configurate
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
 }
@@ -36,7 +55,8 @@ java {
 
 apollo {
     customTypeMapping = [
-            "DateTime": "java.time.OffsetDateTime"
+            "DateTime": "java.time.OffsetDateTime",
+            "URI"     : "java.net.URI"
     ]
 }
 

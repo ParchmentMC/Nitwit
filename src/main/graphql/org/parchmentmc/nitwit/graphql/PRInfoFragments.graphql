@@ -1,0 +1,92 @@
+fragment PullRequestInfo on PullRequest {
+    id
+    title
+    url
+    number
+    state
+    isDraft
+    author {
+        login
+        url
+        avatarUrl
+    }
+    labels(first: 99) {
+        nodes {
+            name
+        }
+        pageInfo {
+            endCursor
+            hasNextPage
+        }
+        totalCount
+    }
+}
+
+fragment DetailedPullRequestInfo on PullRequest {
+    mergeable
+    commits(last: 1) {
+        nodes {
+            commit {
+                statusCheckRollup {
+                    state
+                }
+            }
+        }
+        pageInfo {
+            endCursor
+            hasNextPage
+        }
+        totalCount
+    }
+    latestReviews(first: 99) {
+        latestReviewNodes: nodes {
+            state
+            submittedAt
+            authorCanPushToRepository
+            author {
+                ... on User {
+                    login
+                    id
+                    url
+                    avatarUrl
+                }
+            }
+            url
+        }
+        pageInfo {
+            endCursor
+            hasNextPage
+        }
+        totalCount
+    }
+    reviews(first: 99) {
+        reviewNodes: nodes {
+            state
+            submittedAt
+            authorCanPushToRepository
+            author {
+                ... on User {
+                    login
+                    id
+                    url
+                    avatarUrl
+                }
+            }
+        }
+        pageInfo {
+            endCursor
+            hasNextPage
+        }
+        totalCount
+    }
+    reviewThreads(first: 99) {
+        reviewThreadNodes: nodes {
+            isResolved
+        }
+        pageInfo {
+            endCursor
+            hasNextPage
+        }
+        totalCount
+    }
+}

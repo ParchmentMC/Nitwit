@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 /**
  * Utility class for handling lambda expressions which throw exceptions.
  *
+ * @author sciwhiz12
  * @see <a href="https://stackoverflow.com/a/27252163">StackOverflow,
  * "Java 8 Lambda function that throws exception?", answer by jlb</a>
  * @see <a href="https://stackoverflow.com/a/46966597">StackOverflow,
@@ -23,7 +24,7 @@ public final class LambdaUtil {
      * @return a runnable which runs the given throwing runnable, rethrowing any exceptions
      * @see #sneakyThrow(Throwable)
      */
-    public static Runnable rethrow(final ThrowingRunnable runnable) {
+    public static Runnable rethrowRunnable(final ThrowingRunnable runnable) {
         return runnable;
     }
 
@@ -35,7 +36,7 @@ public final class LambdaUtil {
      * @return a supplier which returns the result from the given throwing supplier, rethrowing any exceptions
      * @see #sneakyThrow(Throwable)
      */
-    public static <T> Supplier<T> rethrow(final ThrowingSupplier<T> supplier) {
+    public static <T> Supplier<T> rethrowSupplier(final ThrowingSupplier<T> supplier) {
         return supplier;
     }
 
@@ -47,7 +48,7 @@ public final class LambdaUtil {
      * @return a runnable which passes to the given throwing consumer, rethrowing any exceptions
      * @see #sneakyThrow(Throwable)
      */
-    public static <T> Consumer<T> rethrow(final ThrowingConsumer<T> consumer) {
+    public static <T> Consumer<T> rethrowConsumer(final ThrowingConsumer<T> consumer) {
         return consumer;
     }
 
@@ -60,8 +61,32 @@ public final class LambdaUtil {
      * @return a function which applies the given throwing function, rethrowing any exceptions
      * @see #sneakyThrow(Throwable)
      */
-    public static <T, R> Function<T, R> rethrow(final ThrowingFunction<T, R> function) {
+    public static <T, R> Function<T, R> rethrowFunction(final ThrowingFunction<T, R> function) {
         return function;
+    }
+
+    /**
+     * Gets a result from the given throwing supplier.
+     *
+     * @param supplier the throwing supplier
+     * @param <T>      the type of results supplied by the supplier
+     * @return the result supplied by the supplier
+     */
+    public static <T> T uncheck(final ThrowingSupplier<T> supplier) {
+        return supplier.get();
+    }
+
+    /**
+     * Calls the given throwing function with the given argument and returns the produced result.
+     *
+     * @param function the throwing function
+     * @param t        the function argument
+     * @param <T>      the type of the input to the function
+     * @param <R>      the type of the result of the function
+     * @return the function result
+     */
+    public static <T, R> R uncheck(final ThrowingFunction<T, R> function, T t) {
+        return function.apply(t);
     }
 
     /**
@@ -82,12 +107,20 @@ public final class LambdaUtil {
      * an exception.
      *
      * @see Runnable
-     * @see #rethrow(ThrowingRunnable)
+     * @see #rethrowRunnable(ThrowingRunnable)
      */
     @FunctionalInterface
     public interface ThrowingRunnable extends Runnable {
+        /**
+         * Takes some action, potentially throwing an exception.
+         */
         void runThrows() throws Exception;
 
+        /**
+         * {@inheritDoc}
+         *
+         * @implSpec This calls {@link #runThrows()}, and rethrows any exception using {@link #sneakyThrow(Throwable)}.
+         */
         @Override
         default void run() {
             try {
@@ -109,12 +142,22 @@ public final class LambdaUtil {
      *
      * @param <T> the type of results supplied by this supplier
      * @see Supplier
-     * @see #rethrow(ThrowingSupplier)
+     * @see #rethrowSupplier(ThrowingSupplier)
      */
     @FunctionalInterface
     public interface ThrowingSupplier<T> extends Supplier<T> {
+        /**
+         * Gets a result, potentially throwing an exception.
+         *
+         * @return a result
+         */
         T getThrows() throws Exception;
 
+        /**
+         * {@inheritDoc}
+         *
+         * @implSpec This calls {@link #getThrows()}, and rethrows any exception using {@link #sneakyThrow(Throwable)}.
+         */
         @Override
         default T get() {
             try {
@@ -136,16 +179,27 @@ public final class LambdaUtil {
      *
      * @param <T> the type of the input to the operation
      * @see Consumer
-     * @see #rethrow(ThrowingConsumer)
+     * @see #rethrowConsumer(ThrowingConsumer)
      */
     @FunctionalInterface
     public interface ThrowingConsumer<T> extends Consumer<T> {
-        void acceptThrows(T elem) throws Exception;
+        /**
+         * Performs this operation on the given argument, potentially throwing an exception.
+         *
+         * @param t the input argument
+         */
+        void acceptThrows(T t) throws Exception;
 
+        /**
+         * {@inheritDoc}
+         *
+         * @implSpec This calls {@link #acceptThrows(Object)}, and rethrows any exception using
+         * {@link #sneakyThrow(Throwable)}.
+         */
         @Override
-        default void accept(final T elem) {
+        default void accept(final T t) {
             try {
-                acceptThrows(elem);
+                acceptThrows(t);
             } catch (final Exception e) {
                 sneakyThrow(e);
             }
@@ -162,12 +216,24 @@ public final class LambdaUtil {
      * @param <T> the type of the input to the function
      * @param <R> the type of the result of the function
      * @see Function
-     * @see #rethrow(ThrowingFunction)
+     * @see #rethrowFunction(ThrowingFunction)
      */
     @FunctionalInterface
     public interface ThrowingFunction<T, R> extends Function<T, R> {
+        /**
+         * Applies this function to the given argument, potentially throwing an exception.
+         *
+         * @param t the function argument
+         * @return the function result
+         */
         R applyThrows(T t) throws Exception;
 
+        /**
+         * {@inheritDoc}
+         *
+         * @implSpec This calls {@link #applyThrows(Object)}, and rethrows any exception using
+         * {@link #sneakyThrow(Throwable)}.
+         */
         @Override
         default R apply(T t) {
             try {

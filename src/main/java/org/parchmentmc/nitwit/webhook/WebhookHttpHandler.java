@@ -2,8 +2,9 @@ package org.parchmentmc.nitwit.webhook;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import org.jetbrains.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.kohsuke.github.GitHub;
+import org.parchmentmc.nitwit.util.LambdaUtil;
 import org.parchmentmc.nitwit.util.io.CallbackInputStream;
 import org.parchmentmc.nitwit.util.io.MacInputStream;
 import org.parchmentmc.nitwit.webhook.events.WebhookEvent;
@@ -21,20 +22,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.parchmentmc.nitwit.util.LambdaUtil.rethrow;
-
 // https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#webhook-payload-object-common-properties
 public class WebhookHttpHandler implements HttpHandler {
     public static final String GITHUB_DELIVERY_GUID_HEADER = "X-GitHub-Delivery";
     public static final String GITHUB_EVENT_HEADER = "X-GitHub-Event";
     public static final String GITHUB_SIGNATURE_HEADER = "X-Hub-Signature-256";
 
-    @Nullable
-    private final byte[] secretToken;
+    private final byte @Nullable [] secretToken;
     private final boolean errorOnSignatureMismatch;
     private final Map<String, WebhookEventHandler<?>> eventHandlers = new HashMap<>();
 
-    public WebhookHttpHandler(@Nullable byte[] secretToken, boolean errorOnSignatureMismatch) {
+    public WebhookHttpHandler(byte @Nullable [] secretToken, boolean errorOnSignatureMismatch) {
         this.secretToken = secretToken;
         this.errorOnSignatureMismatch = errorOnSignatureMismatch;
     }
@@ -69,7 +67,7 @@ public class WebhookHttpHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         validateSignatures(exchange);
 
-        final String event = exchange.getRequestHeaders().getFirst(GITHUB_EVENT_HEADER);
+        final @Nullable String event = exchange.getRequestHeaders().getFirst(GITHUB_EVENT_HEADER);
         if (event == null) {
             String response = "Missing " + GITHUB_EVENT_HEADER + " request header.\n";
             exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, response.length());
@@ -79,7 +77,7 @@ public class WebhookHttpHandler implements HttpHandler {
             return;
         }
 
-        final String guid = exchange.getRequestHeaders().getFirst(GITHUB_DELIVERY_GUID_HEADER);
+        final @Nullable String guid = exchange.getRequestHeaders().getFirst(GITHUB_DELIVERY_GUID_HEADER);
         if (guid == null) {
             String response = "Missing " + GITHUB_DELIVERY_GUID_HEADER + " request header.\n";
             exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, response.length());
@@ -90,7 +88,7 @@ public class WebhookHttpHandler implements HttpHandler {
         }
         final UUID deliveryID = UUID.fromString(guid);
 
-        final WebhookEventHandler<?> handler = eventHandlers.get(event);
+        final @Nullable WebhookEventHandler<?> handler = eventHandlers.get(event);
         if (handler == null) {
             String response = "This webhook handler does not recognize '" + event + "' events.\n";
             exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, response.length());
@@ -104,8 +102,7 @@ public class WebhookHttpHandler implements HttpHandler {
     }
 
     private <T extends WebhookEvent> void doHandle(HttpExchange exchange, UUID deliveryID, WebhookEventHandler<T> handler) throws IOException {
-        try (InputStream inputStream = exchange.getRequestBody();
-             OutputStream outputStream = exchange.getResponseBody()) {
+        try (InputStream inputStream = exchange.getRequestBody()) {
             final T eventPayload = GitHub.getMappingObjectReader().readValue(inputStream, handler.getEventClass());
 
             if (inputStream.available() > 0) {
@@ -136,7 +133,7 @@ public class WebhookHttpHandler implements HttpHandler {
             final String ghSignature = exchange.getRequestHeaders().getFirst(GITHUB_SIGNATURE_HEADER);
             exchange.setStreams(
                     new CallbackInputStream<>(new MacInputStream(mac, exchange.getRequestBody()),
-                            rethrow((MacInputStream in) -> compareSignatures(in, ghSignature))),
+                            LambdaUtil.rethrowConsumer((MacInputStream in) -> compareSignatures(in, ghSignature))),
                     exchange.getResponseBody());
         }
     }

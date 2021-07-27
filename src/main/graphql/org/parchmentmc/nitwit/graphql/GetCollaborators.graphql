@@ -1,0 +1,17 @@
+query GetCollaborators($owner: String!, $repo: String!) {
+    repository(name: $repo, owner: $owner) {
+        collaborators(first: 99) {
+            collaboratorEdges: edges {
+                permission
+                collaboratorNode: node {
+                    login
+                }
+            }
+            totalCount
+            pageInfo {
+                endCursor
+                hasNextPage
+            }
+        }
+    }
+}

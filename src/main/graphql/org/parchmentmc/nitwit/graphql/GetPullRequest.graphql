@@ -1,0 +1,8 @@
+query GetPullRequest($owner: String!, $repo: String!, $number: Int!) {
+    repository(name: $repo, owner: $owner) {
+        pullRequest(number: $number) {
+            ...PullRequestInfo
+            ...DetailedPullRequestInfo
+        }
+    }
+}

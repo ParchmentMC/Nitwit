@@ -1,0 +1,21 @@
+query PullRequests($owner: String!, $repo: String!, $labels: [String!], $first: Int = 8,
+    $before: String, $after: String, $includeDetails: Boolean = false) {
+    repository(name: $repo, owner: $owner) {
+        pullRequests(labels: $labels, states: [OPEN], first: $first, before: $before, after: $after) {
+            edges {
+                node {
+                    ...PullRequestInfo
+                    ...DetailedPullRequestInfo @include(if: $includeDetails)
+                }
+                cursor
+            }
+            totalCount
+            pageInfo {
+                endCursor
+                hasNextPage
+                startCursor
+                hasPreviousPage
+            }
+        }
+    }
+}

@@ -1,4 +1,4 @@
-query GetLabels($repo: String!, $owner: String!, $name: String!) {
+query GetLabels($owner: String!, $repo: String!, $name: String!) {
     repository(name: $repo, owner: $owner) {
         labels(query: $name, first: 50) {
             nodes {

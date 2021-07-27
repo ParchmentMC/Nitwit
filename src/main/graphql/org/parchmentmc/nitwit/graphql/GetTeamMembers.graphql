@@ -1,0 +1,12 @@
+query GetTeamMembers($organization: String!, $team_slug: String!) {
+    organization(login: $organization) {
+        team(slug: $team_slug) {
+            name
+            members(first: 50) {
+                memberNodes: nodes {
+                    login
+                }
+            }
+        }
+    }
+}
