@@ -79,6 +79,12 @@ publishing {
                     url = 'https://opensource.org/licenses/MIT'
                 }
             }
+            developers {
+                developer {
+                    name = "sciwhiz12"
+                    email = "sciwhiz12@sciwhiz12.tk"
+                }
+            }
         }
     }
 }
