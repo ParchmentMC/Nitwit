@@ -94,6 +94,7 @@ shadowJar {
 
     dependsOn relocateShadowJar
 }
+tasks.assemble.dependsOn tasks.shadowJar
 
 test {
     useJUnitPlatform()
