@@ -1,8 +1,11 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
+
 plugins {
     id 'java'
     id 'org.parchmentmc.writtenbooks' version '0.5.+'
     id 'maven-publish'
     id 'com.apollographql.apollo' version '2.5.9'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
 }
 
 project.group = 'org.parchmentmc'
@@ -58,6 +61,38 @@ apollo {
             "DateTime": "java.time.OffsetDateTime",
             "URI"     : "java.net.URI"
     ]
+}
+
+jar {
+    manifest.attributes([
+            'Main-Class': 'org.parchmentmc.nitwit.Main'
+    ])
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+}
+
+sourcesJar {
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+}
+
+def relocateShadowJar = tasks.register("relocateShadowJar", ConfigureShadowRelocation) {
+    target = tasks.shadowJar
+    prefix = "org.parchmentmc.nitwit.shadow"
+}
+
+shadowJar {
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+    includeEmptyDirs = false
+
+    exclude 'META-INF/annotations/**'
+    exclude 'META-INF/maven/**'
+    exclude 'META-INF/proguard/**'
+    exclude 'META-INF/LICENSE*'
+    exclude 'META-INF/NOTICE*'
+
+    dependsOn relocateShadowJar
 }
 
 test {
